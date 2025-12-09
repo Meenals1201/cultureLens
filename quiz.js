@@ -1,29 +1,36 @@
-let form = document.getElementById('quiz-form');
-let resultsSection = document.getElementById('results-section');
-let resultsContainer = document.getElementById('results-container');
+let currentQuestion = 0;
 
+let questions = document.querySelectorAll('.question');
+let nextBtn = document.getElementById('next-btn');
+let submitBtn = document.getElementById('submit-btn');
+let form = document.getElementById('quiz-form');
+
+function showQuestion(index) {
+    for (let i = 0; i < questions.length; i++) {
+        if (i === index) {
+            questions[i].style.display = "block";
+        } else {
+            questions[i].style.display = "none";
+        }
+    }
+
+    if (index === questions.length - 1) {
+        nextBtn.style.display = "none";
+        submitBtn.style.display = "inline-block";
+    } else {
+        nextBtn.style.display = "inline-block";
+        submitBtn.style.display = "none";
+    }
+}
+
+nextBtn.addEventListener('click', function() {
+    currentQuestion = currentQuestion + 1;
+    showQuestion(currentQuestion);
+});
 
 form.addEventListener('submit', function(event) {
-event.preventDefault();
-
-while (resultsContainer.firstChild) {
-resultsContainer.removeChild(resultsContainer.firstChild);
-}
-
-let formData = new FormData(form);
-let entriesArray = Array.from(formData.entries());
-
-
-for (let i = 0; i < entriesArray.length; i++) {
-let questionName = entriesArray[i][0];
-let answerValue = entriesArray[i][1];
-
-
-let p = document.createElement('p');
-p.textContent = questionName + ': ' + answerValue;
-resultsContainer.appendChild(p);
-}
-
-
-resultsSection.style.display = 'block';
+    event.preventDefault();
+    alert("Thank you for your submission!");
 });
+
+showQuestion(currentQuestion);
