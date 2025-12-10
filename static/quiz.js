@@ -30,6 +30,13 @@
             `;
         }
 
+        if (currentIndex === questions.length - 1) {
+        nextBtn.textContent = "Submit";
+    } else {
+        nextBtn.textContent = "Next";
+    }
+
+
         document.getElementById("next-btn").addEventListener("click", () => {
             const selected = document.querySelector('input[name="answer"]:checked');
             if (!selected) {
