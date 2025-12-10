@@ -190,6 +190,7 @@ def admin_page():
 @app.route("/admin/categories")
 def admin_categories():
     if 'user_id' in session and session['user_role'] == 'admin':
+        conn = get_db()
         cursor = conn.cursor(dictionary=True)
         cursor.execute('''SELECT * FROM categories''')
         categories = cursor.fetchall()
@@ -217,7 +218,8 @@ def add_category_process():
 @app.route("/admin/edit-category/<id>")
 def edit_category(id):
     if 'user_id' in session and session['user_role'] == 'admin':
-        
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
         cursor.execute('''SELECT * FROM categories WHERE id=%s''', (id,))
         category = cursor.fetchone()
         return render_template('edit-category.html', category=category)
@@ -247,6 +249,7 @@ def delete_category(id):
 @app.route("/admin/questions")
 def admin_questions():
     if 'user_id' in session and session['user_role'] == 'admin':
+        
         cursor.execute('''SELECT q.id, q.question_text, c.category_name 
                           FROM questions q 
                           JOIN categories c ON q.category_id=c.id''')
