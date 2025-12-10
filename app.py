@@ -54,7 +54,7 @@ def register_process():
                        (name, email, password, 'member'))
         conn.commit()
 
-        return "Registration successful! <a href='/login'>Login here</a>"
+        return "Registration successful! <a href='/'>Login here</a>"
 
 # route login
 @app.route("/")
@@ -81,7 +81,7 @@ def login_process():
         else:
             return redirect('/lens')
     else:
-        return "Invalid credentials. <a href='/login'>Try again</a>"
+        return "Invalid credentials. <a href='/'>Try again</a>"
 
 
 
