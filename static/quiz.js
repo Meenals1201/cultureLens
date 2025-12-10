@@ -54,12 +54,12 @@ nextBtn.addEventListener("click", () => {
 
 
 function submitQuiz() {
-    // create a form
+    
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/submit-quiz';
 
-    // add hidden inputs for each answer
+    
     for (const questionId in answers) {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -69,6 +69,6 @@ function submitQuiz() {
     }
 
     document.body.appendChild(form);
-    form.submit();  // submit the form
+    form.submit();  
 }
 

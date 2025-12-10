@@ -112,13 +112,13 @@ def submit_quiz():
     if not user_id:
         return redirect('/login')
 
-    # Get answers from form instead of JSON
+    
     answers = request.form  
 
     conn = get_db()
     cursor = conn.cursor()
 
-    # Save answers to database
+    
     for question_id, score in answers.items():
         cursor.execute(
             "INSERT INTO responses (user_id, question_id, score) VALUES (%s, %s, %s)",
@@ -126,7 +126,7 @@ def submit_quiz():
         )
     conn.commit()
 
-    # Calculate top category
+    
     cursor.execute("""
         SELECT q.category_id, SUM(r.score) as total_score
         FROM responses r
@@ -161,4 +161,126 @@ def submit_quiz():
         total_score=total_score,
         organisations=organisations
     )
+
+# ---------------- Admin Categories ----------------
+
+@app.route("/admin/categories")
+def admin_categories():
+    if 'user_id' in session and session['user_role'] == 'admin':
+        cursor.execute('''SELECT * FROM categories''')
+        categories = cursor.fetchall()
+        return render_template('admin-categories.html', categories=categories)
+    else:
+        return "Access denied. Admins only."
+
+@app.route("/admin/add-category")
+def add_category():
+    if 'user_id' in session and session['user_role'] == 'admin':
+        return render_template('add-category.html')
+    else:
+        return "Access denied. Admins only."
+
+@app.route("/admin/add-category", methods=['POST'])
+def add_category_process():
+    if 'user_id' in session and session['user_role'] == 'admin':
+        name = request.form.get('name')
+        cursor.execute('''INSERT INTO categories (category_name) VALUES (%s)''', (name,))
+        conn.commit()
+        return redirect('/admin/categories')
+    else:
+        return "Access denied. Admins only."
+
+@app.route("/admin/edit-category/<id>")
+def edit_category(id):
+    if 'user_id' in session and session['user_role'] == 'admin':
+        cursor.execute('''SELECT * FROM categories WHERE id=%s''', (id,))
+        category = cursor.fetchone()
+        return render_template('edit-category.html', category=category)
+    else:
+        return "Access denied. Admins only."
+
+@app.route("/admin/edit-category/<id>", methods=['POST'])
+def edit_category_process(id):
+    if 'user_id' in session and session['user_role'] == 'admin':
+        name = request.form.get('name')
+        cursor.execute('''UPDATE categories SET category_name=%s WHERE id=%s''', (name, id))
+        conn.commit()
+        return redirect('/admin/categories')
+    else:
+        return "Access denied. Admins only."
+
+@app.route("/admin/delete-category/<id>")
+def delete_category(id):
+    if 'user_id' in session and session['user_role'] == 'admin':
+        cursor.execute('''DELETE FROM categories WHERE id=%s''', (id,))
+        conn.commit()
+        return redirect('/admin/categories')
+    else:
+        return "Access denied. Admins only."
+
+
+# ---------------- Admin Questions ----------------
+
+@app.route("/admin/questions")
+def admin_questions():
+    if 'user_id' in session and session['user_role'] == 'admin':
+        cursor.execute('''SELECT q.id, q.question_text, c.category_name 
+                          FROM questions q 
+                          JOIN categories c ON q.category_id=c.id''')
+        questions = cursor.fetchall()
+        return render_template('admin-questions.html', questions=questions)
+    else:
+        return "Access denied. Admins only."
+
+@app.route("/admin/add-question")
+def add_question():
+    if 'user_id' in session and session['user_role'] == 'admin':
+        cursor.execute('''SELECT * FROM categories''')
+        categories = cursor.fetchall()
+        return render_template('add-question.html', categories=categories)
+    else:
+        return "Access denied. Admins only."
+
+@app.route("/admin/add-question", methods=['POST'])
+def add_question_process():
+    if 'user_id' in session and session['user_role'] == 'admin':
+        text = request.form.get('question_text')
+        category_id = request.form.get('category_id')
+        cursor.execute('''INSERT INTO questions (question_text, category_id) VALUES (%s,%s)''', (text, category_id))
+        conn.commit()
+        return redirect('/admin/questions')
+    else:
+        return "Access denied. Admins only."
+
+@app.route("/admin/edit-question/<id>")
+def edit_question(id):
+    if 'user_id' in session and session['user_role'] == 'admin':
+        cursor.execute('''SELECT * FROM questions WHERE id=%s''', (id,))
+        question = cursor.fetchone()
+        cursor.execute('''SELECT * FROM categories''')
+        categories = cursor.fetchall()
+        return render_template('edit-question.html', question=question, categories=categories)
+    else:
+        return "Access denied. Admins only."
+
+@app.route("/admin/edit-question/<id>", methods=['POST'])
+def edit_question_process(id):
+    if 'user_id' in session and session['user_role'] == 'admin':
+        text = request.form.get('question_text')
+        category_id = request.form.get('category_id')
+        cursor.execute('''UPDATE questions SET question_text=%s, category_id=%s WHERE id=%s''', (text, category_id, id))
+        conn.commit()
+        return redirect('/admin/questions')
+    else:
+        return "Access denied. Admins only."
+
+@app.route("/admin/delete-question/<id>")
+def delete_question(id):
+    if 'user_id' in session and session['user_role'] == 'admin':
+        cursor.execute('''DELETE FROM questions WHERE id=%s''', (id,))
+        conn.commit()
+        return redirect('/admin/questions')
+    else:
+        return "Access denied. Admins only."
+
 
