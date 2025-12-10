@@ -35,3 +35,25 @@ def lens():
     questions = cursor.fetchall()
 
     return render_template('lens.html', questions=questions)
+
+@app.route("/login")
+def login():
+   
+    return render_template('login.html')
+
+@app.route("/login", methods=['POST'])
+def login_process():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    cursor.execute('''SELECT id, name, role FROM userstable WHERE email=%s AND password=%s''', (email, password))
+    user = cursor.fetchone()
+
+    if user:
+        user_id, name, role = user
+        session['user_id'] = user_id
+        session['user_name'] = name
+        session['user_role'] = role
+        return redirect('/lens') 
+    else:
+        return "Invalid credentials. <a href='/login'>Try again</a>"
