@@ -3,10 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="/static/quiz-style.css">
 </head>
 <body>
-    
-    <p>Thank you for your submission. We will display results here!</p>
+    <h1>Your Quiz Results</h1>
+
+    <h2>Your inclination is towards: {{ category_name }}</h2>
+    <p>Total Score: {{ total_score }}</p>
+
+    <h3>Organizations aligned with your values:</h3>
+    <ul>
+        {% for org in organisations %}
+        <li>
+            <p>{{ org[0] }}</p><br>
+            {{ org[1] }}<br>
+            <a href="{{ org[2] }}" target="_blank">Career Link</a>
+        </li>
+        {% endfor %}
+    </ul>
+
 </body>
 </html>

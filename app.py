@@ -108,22 +108,52 @@ def get_questions():
 
 @app.route("/submit-quiz", methods=["POST"])
 def submit_quiz():
-    data = request.get_json()  
+    
+    answers = request.form 
     user_id = session.get("user_id")
-
     if not user_id:
-        return jsonify({"status": "error", "message": "Not logged in"}), 403
+        return redirect('/login')
 
-    conn = get_db()
-    cursor = conn.cursor()
-
-    for question_id, score in data.items():
+  
+    for question_id, score in answers.items():
         cursor.execute(
             "INSERT INTO responses (user_id, question_id, score) VALUES (%s, %s, %s)",
             (user_id, question_id, score)
         )
     conn.commit()
-    cursor.close()
-    conn.close()
 
-    return jsonify({"status": "success", "message": "Quiz submitted successfully!"})
+    
+    cursor.execute("""
+        SELECT q.category_id, SUM(r.score) as total_score
+        FROM responses r
+        JOIN questions q ON r.question_id = q.id
+        WHERE r.user_id = %s
+        GROUP BY q.category_id
+        ORDER BY total_score DESC
+        LIMIT 1
+    """, (user_id,))
+    top_category = cursor.fetchone()
+    if not top_category:
+        return "No answers found for user."
+
+    category_id, total_score = top_category
+
+    
+    cursor.execute("SELECT category_name FROM categories WHERE id=%s", (category_id,))
+    category_name = cursor.fetchone()[0]
+
+    
+    cursor.execute("""
+        SELECT name, about, application_link
+        FROM organisations
+        WHERE category_id=%s
+    """, (category_id,))
+    organisations = cursor.fetchall()
+
+    
+    return render_template(
+        "results.html",
+        category_name=category_name,
+        total_score=total_score,
+        organisations=organisations
+    )
