@@ -54,17 +54,21 @@ nextBtn.addEventListener("click", () => {
 
 
 function submitQuiz() {
-    fetch("/submit-quiz", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(answers)
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById("quiz-container").style.display = "none";
-        const resultDiv = document.getElementById("result");
-        resultDiv.style.display = "block";
-        resultDiv.textContent = data.message;
-    })
-    .catch(err => console.error("Error submitting quiz:", err));
+    // create a form
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/submit-quiz';
+
+    // add hidden inputs for each answer
+    for (const questionId in answers) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = questionId;
+        input.value = answers[questionId];
+        form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();  // submit the form
 }
+

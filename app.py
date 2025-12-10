@@ -56,11 +56,11 @@ def register_process():
         return "Registration successful! <a href='/login'>Login here</a>"
 
 # route login
-@app.route("/login")
+@app.route("/")
 def login():
     return render_template('login.html')
 
-@app.route("/login", methods=['POST'])
+@app.route("/", methods=['POST'])
 def login_process():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -108,25 +108,25 @@ def get_questions():
 
 @app.route("/submit-quiz", methods=["POST"])
 def submit_quiz():
-    data = request.get_json() 
-                                                            # --------json
     user_id = session.get("user_id")
-
     if not user_id:
-        return jsonify({"status": "error", "message": "Not logged in"}), 403
+        return redirect('/login')
+
+    # Get answers from form instead of JSON
+    answers = request.form  
 
     conn = get_db()
     cursor = conn.cursor()
 
-  
-    for question_id, score in data.items():
+    # Save answers to database
+    for question_id, score in answers.items():
         cursor.execute(
             "INSERT INTO responses (user_id, question_id, score) VALUES (%s, %s, %s)",
             (user_id, question_id, score)
         )
     conn.commit()
 
- 
+    # Calculate top category
     cursor.execute("""
         SELECT q.category_id, SUM(r.score) as total_score
         FROM responses r
@@ -142,11 +142,9 @@ def submit_quiz():
 
     category_id, total_score = top_category
 
-  
     cursor.execute("SELECT category_name FROM categories WHERE id=%s", (category_id,))
     category_name = cursor.fetchone()[0]
 
-   
     cursor.execute("""
         SELECT name, about, application_link
         FROM organisations
@@ -157,10 +155,10 @@ def submit_quiz():
     cursor.close()
     conn.close()
 
-  
     return render_template(
         "results.html",
         category_name=category_name,
         total_score=total_score,
         organisations=organisations
     )
+
