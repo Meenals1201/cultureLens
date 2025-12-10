@@ -17,7 +17,7 @@
   <form id="quiz-form" method="POST" action="{{ url_for('submit_quiz') }}">
     {% for q in questions %}
       {% set qid = q[0] %}
-      <div class="question" style = "{% if loop.index0 != 0 %}display:none;{% endif %}">
+      <div class="question {% if loop.index0 != 0 %}hidden{% endif %}"
         <p>{{ loop.index }}. {{ q[1] }}</p>
 
         <label><input type="radio" name="{{ qid }}" value="0" required> Strongly Disagree</label>

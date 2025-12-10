@@ -34,3 +34,7 @@ button {
 button:hover {
     background-color: #162d6d;
 }
+
+.hidden{
+    display: none;
+}
