@@ -22,38 +22,57 @@ database=app.config['MYSQL_DB']
 
 cursor = conn.cursor()
 
-@app.route("/lens")
-def lens():
-    if 'user_id' not in session:
-        return redirect('/login')
+@app.route("/register")
+def register():
+    return render_template('register.html')
 
-   
-    cursor.execute('''SELECT id, question_text, category_id
-                      FROM questions
-                      WHERE category_id = %s
-                      ORDER BY id''', (1,))
-    questions = cursor.fetchall()
+@app.route("/register", methods=['POST'])
+def register_process():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-    return render_template('lens.html', questions=questions)
+        cursor.execute('''SELECT * FROM users WHERE email=%s''', (email,))
+        existing_user = cursor.fetchone()
+        cursor.fetchall() 
 
+        if existing_user:
+            return "Email already registered. <a href='/register'>Try again</a>"
+
+        
+        cursor.execute('''INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, %s)''', 
+                       (name, email, password, 'member'))
+        conn.commit()
+
+        return "Registration successful! <a href='/login'>Login here</a>"
+
+# route login
 @app.route("/login")
 def login():
-   
     return render_template('login.html')
 
 @app.route("/login", methods=['POST'])
 def login_process():
-    email = request.form.get('email')
-    password = request.form.get('password')
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-    cursor.execute('''SELECT id, name, role FROM userstable WHERE email=%s AND password=%s''', (email, password))
-    user = cursor.fetchone()
+        cursor.execute('''SELECT id, name, role FROM users WHERE email=%s AND password=%s''', (email, password))
+        user = cursor.fetchone()
+        cursor.fetchall()  
 
-    if user:
-        user_id, name, role = user
-        session['user_id'] = user_id
-        session['user_name'] = name
-        session['user_role'] = role
-        return redirect('/lens') 
-    else:
-        return "Invalid credentials. <a href='/login'>Try again</a>"
+        if user:
+            user_id, name, role = user
+            session['user_id'] = user_id
+            session['user_name'] = name
+            session['user_role'] = role
+            return redirect('/lens')
+        else:
+            return "Invalid credentials. <a href='/login'>Try again</a>"
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect('/login')
