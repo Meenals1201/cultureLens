@@ -76,3 +76,40 @@ def login_process():
 def logout():
     session.clear()
     return redirect('/login')
+
+@app.route("/lens", methods=['GET', 'POST'])
+def lens():
+    if 'user_id' not in session:
+        return redirect('/login')
+
+    user_id = session['user_id']
+
+    if request.method == 'POST':
+       
+        for key, value in request.form.items():
+            question_id = key
+            score = value
+
+            cursor.execute('''
+                INSERT INTO responses (user_id, question_id, score)
+                VALUES (%s, %s, %s)
+            ''', (user_id, question_id, score))
+        conn.commit()
+
+        return "Quiz submitted successfully! <a href='/'>Go to homepage</a>"
+
+   
+    cursor.execute('''
+        SELECT id, question_text
+        FROM questions
+        WHERE category_id = %s
+        ORDER BY id
+    ''', (1,))
+    questions = cursor.fetchall()
+
+    return render_template('lens.html', questions=questions)
+
+    @app.route("/submit-quiz", methods=['POST'])
+    def submit_quiz():
+    
+     return "Quiz submitted successfully!"

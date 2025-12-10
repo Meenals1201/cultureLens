@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Document</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='quiz-style.css') }}">
+  <link rel="stylesheet" href="/static/quiz-style.css">
 </head>
 <body>
 
@@ -14,7 +14,8 @@
 </header>
 
 <main>
-  <form id="quiz-form" method="POST" action="{{ url_for('submit_quiz') }}">
+  <form id="quiz-form" method="POST" action="/submit-quiz">
+
     {% for q in questions %}
       {% set qid = q[0] %}
       <div class="question {% if loop.index0 != 0 %}hidden{% endif %}"
@@ -33,6 +34,7 @@
   </form>
 </main>
 
-<script src="{{ url_for('static', filename='quiz.js') }}"></script>
+<script src="/static/quiz.js"></script>
+
 </body>
 </html>
