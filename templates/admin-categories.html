@@ -10,7 +10,10 @@
     <ul>
         {% for cat in categories %}
         <li>
-            {{ cat['category_name'] }} 
+             
+            {{ cat['category_name'] }}
+            
+
             - <a href="/admin/edit-category/{{ cat['id'] }}">Edit</a>
             - <a href="/admin/delete-category/{{ cat['id'] }}">Delete</a>
         </li>

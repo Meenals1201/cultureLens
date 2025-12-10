@@ -190,6 +190,7 @@ def admin_page():
 @app.route("/admin/categories")
 def admin_categories():
     if 'user_id' in session and session['user_role'] == 'admin':
+        cursor = conn.cursor(dictionary=True)
         cursor.execute('''SELECT * FROM categories''')
         categories = cursor.fetchall()
         return render_template('admin-categories.html', categories=categories)
@@ -216,6 +217,7 @@ def add_category_process():
 @app.route("/admin/edit-category/<id>")
 def edit_category(id):
     if 'user_id' in session and session['user_role'] == 'admin':
+        
         cursor.execute('''SELECT * FROM categories WHERE id=%s''', (id,))
         category = cursor.fetchone()
         return render_template('edit-category.html', category=category)
