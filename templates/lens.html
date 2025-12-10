@@ -1,175 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="quiz-style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Document</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='quiz-style.css') }}">
 </head>
 <body>
-    
 
 <header>
-<h1>Culture Lens</h1>
-<p>Discover which organizations match your personal values!</p>
+  <h1>Culture Lens</h1>
+  <p>Discover which organizations match your personal values!</p>
 </header>
 
-
 <main>
-<form id="quiz-form">
-  <div class="question">
-        <p>1. I prefer working in collaborative teams over working alone.</p>
-        <label><input type="radio" name="teamwork" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="teamwork" value="1">Disagree</label>
-        <label><input type="radio" name="teamwork" value="2">Neutral</label>
-        <label><input type="radio" name="teamwork" value="3">Agree</label>
-        <label><input type="radio" name="teamwork" value="4">Strongly Agreee</label>
-    </div>
+  <form id="quiz-form" method="POST" action="{{ url_for('submit_quiz') }}">
+    {% for q in questions %}
+      {% set qid = q[0] %}
+      <div class="question" style = "{% if loop.index0 != 0 %}display:none;{% endif %}">
+        <p>{{ loop.index }}. {{ q[1] }}</p>
 
-    <div class="question" style="display:none;">
-        <p>2. I enjoy experimenting with new ideas and technologies.</p>
-        <label><input type="radio" name="innovation" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="innovation" value="1">Disagree</label>
-        <label><input type="radio" name="innovation" value="2">Neutral</label>
-        <label><input type="radio" name="innovation" value="3">Agree</label>
-        <label><input type="radio" name="innovation" value="4">Strongly Agree</label>
-    </div>
-
-  
-    <div class="question" style="display:none;">
-        <p>3. Diversity and inclusivity in the workplace are important to me.</p>
-        <label><input type="radio" name="inclusivity" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="inclusivity" value="1">Disagree</label>
-        <label><input type="radio" name="inclusivity" value="2">Neutral</label>
-        <label><input type="radio" name="inclusivity" value="3">Agree</label>
-        <label><input type="radio" name="inclusivity" value="4">Strongly Agree</label>
-    </div>
-
-    <div class="question" style="display:none;">
-        <p>4. I value transparency and honesty from leadership.</p>
-        <label><input type="radio" name="ethics" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="ethics" value="1">Disagree</label>
-        <label><input type="radio" name="ethics" value="2">Neutral</label>
-        <label><input type="radio" name="ethics" value="3">Agree</label>
-        <label><input type="radio" name="ethics" value="4">Strongly Agree</label>
-    </div>
-
-    
-    <div class="question" style="display:none;">
-        <p>5. I prefer a flexible work schedule over a strict 9-5.</p>
-        <label><input type="radio" name="work_life_balance" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="work_life_balance" value="1">Disagree</label>
-        <label><input type="radio" name="work_life_balance" value="2">Neutral</label>
-        <label><input type="radio" name="work_life_balance" value="3">Agree</label>
-        <label><input type="radio" name="work_life_balance" value="4">Strongly Agree</label>
-    </div>
-
-  
-    <div class="question" style="display:none;">
-        <p>6. I feel motivated when my work has a positive impact on society.</p>
-        <label><input type="radio" name="purpose" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="purpose" value="1">Disagree</label>
-        <label><input type="radio" name="purpose" value="2">Neutral</label>
-        <label><input type="radio" name="purpose" value="3">Agree</label>
-        <label><input type="radio" name="purpose" value="4">Strongly Agree</label>
-    </div>
-
-    <div class="question" style="display:none;">
-        <p>7. I thrive in high-pressure, fast-paced work environments.</p>
-        <label><input type="radio" name="pace" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="pace" value="1">Disagree</label>
-        <label><input type="radio" name="pace" value="2">Neutral</label>
-        <label><input type="radio" name="pace" value="3">Agree</label>
-        <label><input type="radio" name="pace" value="4">Strongly Agree</label>
-    </div>
-
- 
-    <div class="question" style="display:none;">
-        <p>8. I like having clear instructions and guidelines before starting a task.</p>
-        <label><input type="radio" name="structure" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="structure" value="1">Disagree</label>
-        <label><input type="radio" name="structure" value="2">Neutral</label>
-        <label><input type="radio" name="structure" value="3">Agree</label>
-        <label><input type="radio" name="structure" value="4">Strongly Agree</label>
-    </div>
-
- 
-    <div class="question" style="display:none;">
-        <p>9. Recognition and appreciation for my work are important to me.</p>
-        <label><input type="radio" name="recognition" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="recognition" value="1">Disagree</label>
-        <label><input type="radio" name="recognition" value="2">Neutral</label>
-        <label><input type="radio" name="recognition" value="3">Agree</label>
-        <label><input type="radio" name="recognition" value="4">Strongly Agree</label>
-    </div>
-
-
-    <div class="question" style="display:none;">
-        <p>10. I enjoy learning from failure and taking calculated risks.</p>
-        <label><input type="radio" name="risk_taking" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="risk_taking" value="1">Disagree</label>
-        <label><input type="radio" name="risk_taking" value="2">Neutral</label>
-        <label><input type="radio" name="risk_taking" value="3">Agree</label>
-        <label><input type="radio" name="risk_taking" value="4">Strongly Agree</label>
-    </div>
-
-
-    <div class="question" style="display:none;">
-        <p>11. I prefer working for organizations that give back to the community.</p>
-        <label><input type="radio" name="social_responsibility" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="social_responsibility" value="1">Disagree</label>
-        <label><input type="radio" name="social_responsibility" value="2">Neutral</label>
-        <label><input type="radio" name="social_responsibility" value="3">Agree</label>
-        <label><input type="radio" name="social_responsibility" value="4">Strongly Agree</label>
-    </div>
-
-
-    <div class="question" style="display:none;">
-        <p>12. I value workplaces that encourage continuous learning.</p>
-        <label><input type="radio" name="learning" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="learning" value="1">Disagree</label>
-        <label><input type="radio" name="learning" value="2">Neutral</label>
-        <label><input type="radio" name="learning" value="3">Agree</label>
-        <label><input type="radio" name="learning" value="4">Strongly Agree</label>
-    </div>
-
-
-    <div class="question" style="display:none;">
-        <p>13. I feel comfortable voicing my opinions and ideas openly.</p>
-        <label><input type="radio" name="communication" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="communication" value="1">Disagree</label>
-        <label><input type="radio" name="communication" value="2">Neutral</label>
-        <label><input type="radio" name="communication" value="3">Agree</label>
-        <label><input type="radio" name="communication" value="4">Strongly Agree</label>
-    </div>
-
-
-    <div class="question" style="display:none;">
-        <p>14. I like having opportunities to mentor or help others grow.</p>
-        <label><input type="radio" name="mentorship" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="mentorship" value="1">Disagree</label>
-        <label><input type="radio" name="mentorship" value="2">Neutral</label>
-        <label><input type="radio" name="mentorship" value="3">Agree</label>
-        <label><input type="radio" name="mentorship" value="4">Strongly Agree</label>
-    </div>
-
-
-    <div class="question" style="display:none;">
-        <p>15. I prefer clear goals and measurable success metrics.</p>
-        <label><input type="radio" name="goal_orientation" value="0" required>Strongly Disagree</label>
-        <label><input type="radio" name="goal_orientation" value="1">Disagree</label>
-        <label><input type="radio" name="goal_orientation" value="2">Neutral</label>
-        <label><input type="radio" name="goal_orientation" value="3">Agree</label>
-        <label><input type="radio" name="goal_orientation" value="4">Strongly Agree</label>
-    </div>
+        <label><input type="radio" name="{{ qid }}" value="0" required> Strongly Disagree</label>
+        <label><input type="radio" name="{{ qid }}" value="1"> Disagree</label>
+        <label><input type="radio" name="{{ qid }}" value="2"> Neutral</label>
+        <label><input type="radio" name="{{ qid }}" value="3"> Agree</label>
+        <label><input type="radio" name="{{ qid }}" value="4"> Strongly Agree</label>
+      </div>
+    {% endfor %}
 
     <button type="button" id="next-btn">Next</button>
     <button type="submit" id="submit-btn" style="display:none;">Submit</button>
-
-</form>
-
+  </form>
 </main>
 
-<script src="quiz.js"></script>
+<script src="{{ url_for('static', filename='quiz.js') }}"></script>
 </body>
 </html>
