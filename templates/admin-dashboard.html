@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <p>Welcome, {{ session['user_name'] }}!</p>
+    <a href="/admin/categories">Manage Categories</a> | 
+    <a href="/admin/questions">Manage Questions</a> | 
+    <a href="/logout">Logout</a>
+
+    <h2>Categories</h2>
+    <ul>
+        {% for cat in categories %}
+        <li>{{ cat['category_name'] }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Questions</h2>
+    <ul>
+        {% for q in questions %}
+        <li>{{ q['question_text'] }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

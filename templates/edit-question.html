@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Question</title>
+</head>
+<body>
+    <h1>Edit Question</h1>
+    <form method="POST" action="/admin/edit-question/{{ question[0] }}">
+        <input type="text" name="question_text" value="{{ question[1] }}" required><br><br>
+        <select name="category_id" required>
+            {% for cat in categories %}
+            <option value="{{ cat['id'] }}" {% if cat['id']==question[2] %}selected{% endif %}>
+                {{ cat['category_name'] }}
+            </option>
+            {% endfor %}
+        </select><br><br>
+        <button type="submit">Update Question</button>
+    </form>
+    <a href="/admin/questions">Back to Questions</a>
+</body>
+</html>
