@@ -1,40 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Document</title>
-  <link rel="stylesheet" href="/static/quiz-style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture Lens Quiz</title>
+    <link rel="stylesheet" href="/static/quiz-style.css">
 </head>
 <body>
+    <h1>Culture Lens Quiz</h1>
+    <p>Answer the questions to find out which organizations match your values!</p>
 
-<header>
-  <h1>Culture Lens</h1>
-  <p>Discover which organizations match your personal values!</p>
-</header>
+    <div id="quiz-container">
+        <p id="question-text"></p>
+        <div id="options"></div>
+        <button id="next-btn">Next</button>
+    </div>
 
-<main>
-  <form id="quiz-form" method="POST" action="/submit-quiz">
+    <div id="result" style="display:none;"></div>
 
-    {% for q in questions %}
-      {% set qid = q[0] %}
-      <div class="question {% if loop.index0 != 0 %}hidden{% endif %}"
-        <p>{{ loop.index }}. {{ q[1] }}</p>
-
-        <label><input type="radio" name="{{ qid }}" value="0" required> Strongly Disagree</label>
-        <label><input type="radio" name="{{ qid }}" value="1"> Disagree</label>
-        <label><input type="radio" name="{{ qid }}" value="2"> Neutral</label>
-        <label><input type="radio" name="{{ qid }}" value="3"> Agree</label>
-        <label><input type="radio" name="{{ qid }}" value="4"> Strongly Agree</label>
-      </div>
-    {% endfor %}
-
-    <button type="button" id="next-btn">Next</button>
-    <button type="submit" id="submit-btn" style="display:none;">Submit</button>
-  </form>
-</main>
-
-<script src="/static/quiz.js"></script>
-
+    <script src="/static/quiz.js"></script>
+    </script>
 </body>
 </html>

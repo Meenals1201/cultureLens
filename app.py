@@ -22,6 +22,14 @@ database=app.config['MYSQL_DB']
 
 cursor = conn.cursor()
 
+def get_db():
+    return mysql.connector.connect(
+        host=app.config['MYSQL_HOST'],
+        user=app.config['MYSQL_USER'],
+        password=app.config['MYSQL_PASSWORD'],
+        database=app.config['MYSQL_DB']
+    )
+
 @app.route("/register")
 def register():
     return render_template('register.html')
@@ -77,39 +85,45 @@ def logout():
     session.clear()
     return redirect('/login')
 
-@app.route("/lens", methods=['GET', 'POST'])
+@app.route("/lens")
 def lens():
     if 'user_id' not in session:
         return redirect('/login')
+    return render_template("lens.html")
 
-    user_id = session['user_id']
 
-    if request.method == 'POST':
-       
-        for key, value in request.form.items():
-            question_id = key
-            score = value
+@app.route("/get-questions")
+def get_questions():
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
 
-            cursor.execute('''
-                INSERT INTO responses (user_id, question_id, score)
-                VALUES (%s, %s, %s)
-            ''', (user_id, question_id, score))
-        conn.commit()
-
-        return "Quiz submitted successfully! <a href='/'>Go to homepage</a>"
-
-   
-    cursor.execute('''
-        SELECT id, question_text
-        FROM questions
-        WHERE category_id = %s
-        ORDER BY id
-    ''', (1,))
+    cursor.execute("SELECT id, question_text FROM questions ORDER BY id")
     questions = cursor.fetchall()
 
-    return render_template('lens.html', questions=questions)
+    cursor.close()
+    conn.close()
 
-    @app.route("/submit-quiz", methods=['POST'])
-    def submit_quiz():
-    
-     return "Quiz submitted successfully!"
+    return jsonify(questions)
+
+
+@app.route("/submit-quiz", methods=["POST"])
+def submit_quiz():
+    data = request.get_json()  
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"status": "error", "message": "Not logged in"}), 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    for question_id, score in data.items():
+        cursor.execute(
+            "INSERT INTO responses (user_id, question_id, score) VALUES (%s, %s, %s)",
+            (user_id, question_id, score)
+        )
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({"status": "success", "message": "Quiz submitted successfully!"})

@@ -1,36 +1,62 @@
-let currentQuestion = 0;
+ let questions = [];
+        let currentIndex = 0;
+        let answers = {};
 
-let questions = document.querySelectorAll('.question');
-let nextBtn = document.getElementById('next-btn');
-let submitBtn = document.getElementById('submit-btn');
-let form = document.getElementById('quiz-form');
+        
+        fetch('/get-questions')
+            .then(response => response.json())
+            .then(data => {
+                questions = data;
+                showQuestion();
+            })
+            .catch(err => console.error("Error fetching questions:", err));
 
-function showQuestion(index) {
-    for (let i = 0; i < questions.length; i++) {
-        if (i === index) {
-            questions[i].style.display = "block";
-        } else {
-            questions[i].style.display = "none";
+        function showQuestion() {
+            if (currentIndex >= questions.length) {
+                submitQuiz();
+                return;
+            }
+
+            const question = questions[currentIndex];
+            document.getElementById("question-text").textContent = `${currentIndex + 1}. ${question.question_text}`;
+
+            const optionsDiv = document.getElementById("options");
+            optionsDiv.innerHTML = `
+                <label><input type="radio" name="answer" value="0"> Strongly Disagree</label><br>
+                <label><input type="radio" name="answer" value="1"> Disagree</label><br>
+                <label><input type="radio" name="answer" value="2"> Neutral</label><br>
+                <label><input type="radio" name="answer" value="3"> Agree</label><br>
+                <label><input type="radio" name="answer" value="4"> Strongly Agree</label>
+            `;
         }
-    }
 
-    if (index === questions.length - 1) {
-        nextBtn.style.display = "none";
-        submitBtn.style.display = "inline-block";
-    } else {
-        nextBtn.style.display = "inline-block";
-        submitBtn.style.display = "none";
-    }
-}
+        document.getElementById("next-btn").addEventListener("click", () => {
+            const selected = document.querySelector('input[name="answer"]:checked');
+            if (!selected) {
+                alert("Please select an answer.");
+                return;
+            }
 
-nextBtn.addEventListener('click', function() {
-    currentQuestion = currentQuestion + 1;
-    showQuestion(currentQuestion);
-});
+           
+            const questionId = questions[currentIndex].id;
+            answers[questionId] = selected.value;
 
-form.addEventListener('submit', function(event) {
-    event.preventDefault();
-    alert("Thank you for your submission!");
-});
+            currentIndex+1;
+            showQuestion();
+        });
 
-showQuestion(currentQuestion);
+        function submitQuiz() {
+            fetch("/submit-quiz", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(answers)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("quiz-container").style.display = "none";
+                const resultDiv = document.getElementById("result");
+                resultDiv.style.display = "block";
+                resultDiv.textContent = data.message;
+            })
+            .catch(err => console.error("Error submitting quiz:", err));
+        }
