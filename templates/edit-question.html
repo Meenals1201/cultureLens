@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+    <div class="head"></div>
     <h1>Edit Question</h1>
     <form method="POST" action="/admin/edit-question/{{ question[0] }}">
         <input type="text" name="question_text" value="{{ question[1] }}" required><br><br>
