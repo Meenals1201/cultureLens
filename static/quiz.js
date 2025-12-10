@@ -4,7 +4,6 @@ let answers = {};
 
 const nextBtn = document.getElementById("next-btn");
 
-// Fetch questions from server
 fetch('/get-questions')
     .then(response => response.json())
     .then(data => {
@@ -13,7 +12,6 @@ fetch('/get-questions')
     })
     .catch(err => console.error("Error fetching questions:", err));
 
-// Function to display the current question
 function showQuestion() {
     if (currentIndex >= questions.length) {
         submitQuiz();
@@ -32,7 +30,6 @@ function showQuestion() {
         <label><input type="radio" name="answer" value="4"> Strongly Agree</label>
     `;
 
-    // Update button text for last question
     if (currentIndex === questions.length - 1) {
         nextBtn.textContent = "Submit";
     } else {
@@ -40,7 +37,7 @@ function showQuestion() {
     }
 }
 
-// Handle Next/Submit button click
+
 nextBtn.addEventListener("click", () => {
     const selected = document.querySelector('input[name="answer"]:checked');
     if (!selected) {
@@ -55,7 +52,7 @@ nextBtn.addEventListener("click", () => {
     showQuestion();
 });
 
-// Submit quiz to server
+
 function submitQuiz() {
     fetch("/submit-quiz", {
         method: "POST",
