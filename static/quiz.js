@@ -41,7 +41,7 @@
             const questionId = questions[currentIndex].id;
             answers[questionId] = selected.value;
 
-            currentIndex+1;
+            currentIndex+=1;
             showQuestion();
         });
 
