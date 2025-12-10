@@ -71,13 +71,16 @@ def login_process():
         cursor.fetchall()  
 
         if user:
-            user_id, name, role = user
-            session['user_id'] = user_id
-            session['user_name'] = name
-            session['user_role'] = role
-            return redirect('/lens')
-        else:
-            return "Invalid credentials. <a href='/login'>Try again</a>"
+         user_id, name, role = user
+        session['user_id'] = user_id
+        session['user_name'] = name
+        session['user_role'] = role
+    
+    if role == 'admin':
+        return redirect('/admin-page')   
+    else:
+        return redirect('/lens')        
+
 
 
 @app.route("/logout")
@@ -162,7 +165,6 @@ def submit_quiz():
         organisations=organisations
     )
 
-# ---------------- Admin Categories ----------------
 
 @app.route("/admin/categories")
 def admin_categories():
@@ -218,8 +220,6 @@ def delete_category(id):
     else:
         return "Access denied. Admins only."
 
-
-# ---------------- Admin Questions ----------------
 
 @app.route("/admin/questions")
 def admin_questions():
