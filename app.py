@@ -258,8 +258,13 @@ def admin_questions():
 @app.route("/admin/add-question")
 def add_question():
     if 'user_id' in session and session['user_role'] == 'admin':
-        cursor.execute('''SELECT * FROM categories''')
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM categories")
         categories = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
         return render_template('add-question.html', categories=categories)
     else:
         return "Access denied. Admins only."
