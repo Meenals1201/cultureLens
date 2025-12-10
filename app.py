@@ -30,6 +30,7 @@ def get_db():
         database=app.config['MYSQL_DB']
     )
 
+
 @app.route("/register")
 def register():
     return render_template('register.html')
@@ -62,24 +63,26 @@ def login():
 
 @app.route("/", methods=['POST'])
 def login_process():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+    email = request.form.get('email')
+    password = request.form.get('password')
 
-        cursor.execute('''SELECT id, name, role FROM users WHERE email=%s AND password=%s''', (email, password))
-        user = cursor.fetchone()
-        cursor.fetchall()  
+    cursor.execute('''SELECT id, name, role FROM users WHERE email=%s AND password=%s''', (email, password))
+    user = cursor.fetchone()
+    cursor.fetchall()
 
-        if user:
-         user_id, name, role = user
+    if user:
+        user_id, name, role = user
         session['user_id'] = user_id
         session['user_name'] = name
         session['user_role'] = role
-    
-    if role == 'admin':
-        return redirect('/admin-page')   
+
+        if role == 'admin':
+            return redirect('/admin-page')
+        else:
+            return redirect('/lens')
     else:
-        return redirect('/lens')        
+        return "Invalid credentials. <a href='/login'>Try again</a>"
+
 
 
 
@@ -165,6 +168,24 @@ def submit_quiz():
         organisations=organisations
     )
 
+@app.route("/admin-page")
+def admin_page():
+    if 'user_id' in session and session['user_role'] == 'admin':
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT * FROM questions")
+        questions = cursor.fetchall()
+
+        cursor.execute("SELECT * FROM categories")
+        categories = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return render_template("admin-dashboard.html", questions=questions, categories=categories)
+    else:
+        return "Access denied. Admins only."
 
 @app.route("/admin/categories")
 def admin_categories():
